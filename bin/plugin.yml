@@ -1,0 +1,14 @@
+name: ResModProtect
+main: sk.gnox.bukkit.resmodprotect.ResModProtect
+authors: [ GnoX, Limeth ]
+version: 1.2
+description: This plugin allows to protect your modded items.
+depend: [ Residence ]
+commands:
+  rmp:
+    description: ResModProtect settings, currently only command "reload".
+    aliases: [resmodprotect]
+    usage: "Usage: /<command>"
+  rmpreload:
+    description: Reloads plugin.
+    usage: /<command>
