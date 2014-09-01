@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import sk.yweb.gnox.bukkit.resmodprotect.Config;
 import sk.yweb.gnox.bukkit.resmodprotect.ResModProtect;
@@ -24,15 +25,45 @@ public class PlayerInteractListener implements Listener {
     public static final Logger logger = ResModProtect.logger;
     public ResidenceManager resManager = Residence.getResidenceManager();
     public Config cfg = ResModProtect.getConfigManager();
+    private ResModProtect plugin = new ResModProtect();
+
 
     public PlayerInteractListener() {
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent e) {
+
+        if (e.getPlayer().isOp() || e.getPlayer().hasPermission("residence.admin")) {
+            return;
+        }
+
+        Player p = e.getPlayer();
+        Location l = e.getRightClicked().getLocation();
+        ClaimedResidence res = resManager.getByLoc(l);
+
+        if (res == null) {
+            return;
+        }
+
+        ResidencePermissions resPerms = res.getPermissions();
+        boolean hasEntityPerms = resPerms.playerHas(p.getName(), "entity", true);
+
+        if (!hasEntityPerms) {
+            e.setCancelled(true);
+            String message = ("Player: " + p.getName() + " tried to right click entity " + e.getRightClicked().getType() + " in Residence: " + res.getName() + ".");
+            plugin.logToFile(message);
+
+            ResModProtect.logger.log(Level.WARNING, "Player: {0} tried to right click entity {1} in Residence: {2}.", new Object[]{p.getName(), e.getRightClicked().getType(), res.getName()});
+
+            p.sendMessage(ChatColor.RED + "You cannot right-click this entity.");
+        }
+    }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerInteract(PlayerInteractEvent e) {
+    public void onPlyerInteract(PlayerInteractEvent e) {
 
-        if (e.getPlayer().isOp()) {
+        if (e.getPlayer().isOp() || e.getPlayer().hasPermission("residence.admin")) {
             return;
         }
 
@@ -54,7 +85,12 @@ public class PlayerInteractListener implements Listener {
 
                 if (!hasWrenchPerms && e.getItem() != null && cfg.getWrenchIds().contains(e.getItem().getTypeId())) {
                     e.setCancelled(true);
+
+                    String message = ("Player: " + p.getName() + " tried to use wrench on item ID " + clickedBlock.getTypeId() + " in Residence: " + res.getName() + ".");
+                    plugin.logToFile(message);
+
                     ResModProtect.logger.log(Level.WARNING, "Player: {0} tried to use wrench on item ID: {1} in Residence: {2}.", new Object[]{p.getName(), clickedBlock.getTypeId(), res.getName()});
+
                     p.sendMessage(ChatColor.RED + "You cannot use this Item.");
                     return;
                 }
@@ -97,7 +133,12 @@ public class PlayerInteractListener implements Listener {
 
         if (!hasWrenchPerms && e.getItem() != null && cfg.getWrenchIds().contains(e.getItem().getTypeId())) {
             e.setCancelled(true);
+
+            String message = ("Player: " + p.getName() + " tried to use wrench on item ID " + clickedBlock.getTypeId() + " in Residence: " + res.getName() + ".");
+            plugin.logToFile(message);
+
             ResModProtect.logger.log(Level.WARNING, "Player: {0} tried to use wrench on item ID: {1} in Residence: {2}.", new Object[]{p.getName(), clickedBlock.getTypeId(), res.getName()});
+
             p.sendMessage(ChatColor.RED + "You cannot use this Item.");
             return;
         }

@@ -1,6 +1,6 @@
 name: ResModProtect
 main: sk.yweb.gnox.bukkit.resmodprotect.ResModProtect
-authors: [ GnoX, Limeth ]
+authors: [ GnoX, ArcasCZ ]
 version: 1.2
 description: This plugin allows to protect your modded items.
 depend: [ Residence ]

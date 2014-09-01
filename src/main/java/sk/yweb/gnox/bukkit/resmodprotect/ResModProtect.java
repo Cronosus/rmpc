@@ -1,6 +1,7 @@
 package sk.yweb.gnox.bukkit.resmodprotect;
 
 import com.bekvon.bukkit.residence.protection.FlagPermissions;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -12,6 +13,12 @@ import org.bukkit.plugin.java.JavaPlugin;
 import sk.yweb.gnox.bukkit.resmodprotect.listeners.PlayerInteractListener;
 import sk.yweb.gnox.bukkit.resmodprotect.listeners.ResidenceListener;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,19 +52,21 @@ public class ResModProtect extends JavaPlugin {
         }
 
 
-        logger.info("[ResModProtect] Added 5 flags and 1 group to Residence!");
+        logger.info("[ResModProtect] Added 6 flags and 1 group to Residence!");
 
         FlagPermissions.addFlag("me");
         FlagPermissions.addFlag("modchests");
         FlagPermissions.addFlag("wrench");
         FlagPermissions.addFlag("machine");
         FlagPermissions.addFlag("decor");
+        FlagPermissions.addFlag("entity");
 
         FlagPermissions.addFlagToFlagGroup("mods", "me");
         FlagPermissions.addFlagToFlagGroup("mods", "modchests");
         FlagPermissions.addFlagToFlagGroup("mods", "wrench");
         FlagPermissions.addFlagToFlagGroup("mods", "machine");
         FlagPermissions.addFlagToFlagGroup("mods", "decor");
+        FlagPermissions.addFlagToFlagGroup("mods", "entity");
 
         getServer().getPluginManager().registerEvents(new PlayerInteractListener(), this);
         getServer().getPluginManager().registerEvents(new ResidenceListener(), this);
@@ -170,6 +179,38 @@ public class ResModProtect extends JavaPlugin {
     public void reloadPlugin() {
         this.onDisable();
         this.onEnable();
+
+    }
+
+    public void logToFile(String message) {
+        try {
+            File dataFolder = Bukkit.getServer().getPluginManager().getPlugin("ResModProtect").getDataFolder();
+            //File dataFolder = getDataFolder();
+            System.out.println(dataFolder);
+            if (!dataFolder.exists()) {
+                dataFolder.mkdir();
+            }
+
+            File saveTo = new File(dataFolder, "log.txt");
+            if (!saveTo.exists()) {
+                saveTo.createNewFile();
+            }
+
+
+            FileWriter fw = new FileWriter(saveTo, true);
+            PrintWriter pw = new PrintWriter(fw);
+            Calendar cal = Calendar.getInstance();
+            cal.getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.YYYY HH:mm:ss");
+
+            String logText = "[" + sdf.format(cal.getTime()) + "] " + message;
+            pw.println(logText);
+            pw.flush();
+            pw.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
