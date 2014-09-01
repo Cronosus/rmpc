@@ -18,48 +18,15 @@ import java.util.Map;
 public class ResidenceListener implements Listener {
     protected Map<String, Long> lastUpdate = new HashMap<String, Long>();
     protected Map<String, Location> entryLocation = new HashMap<String, Location>();
-/*    
-    @EventHandler
-	public void onResidenceChanged(ResidenceChangedEvent event)
-	{
-		Player player = event.getPlayer();
-		String playerName = player.getName();
-		ClaimedResidence to = event.getTo();
-		
-		if(to == null)
-			return;
-		
-		ResidencePermissions perms = to.getPermissions();
-		boolean canMove = perms.playerHas(playerName, "move", true);
-		
-		if(canMove)
-			return;
-		
-		ResidenceCounter counter = ResidenceCounter.get(player, to, true);
-		
-		counter.increment();
-		
-		if(counter.hasOverflown())
-		{
-			World world = player.getWorld();
-			Location spawn = world.getSpawnLocation();
-			
-			player.teleport(spawn);
-		}
-		
-		player.sendMessage(ChatColor.RED + "Sem nepatrís!");
-	}
-	*/
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
 
-        if (player == null)
+        if (player == null || player.isOp())
             return;
 
-        String playerName = player.getName();
-        Long last = lastUpdate.get(playerName);
+        Long last = lastUpdate.get(player.toString());
         long now = System.currentTimeMillis();
 
         if (last != null && now - last < Residence.getConfigManager().getMinMoveUpdateInterval())
@@ -72,33 +39,30 @@ public class ResidenceListener implements Listener {
             return;
 
         ClaimedResidence res = Residence.getResidenceManager().getByLoc(to);
-        if (res == null)
+        if (res == null){
+            entryLocation.put(player.toString(), player.getLocation());
             return;
+        }
 
-        lastUpdate.put(playerName, now);
+        lastUpdate.put(player.toString(), now);
 
-        if (!res.getPermissions().playerHas(playerName, "move", true) && !Residence.isResAdminOn(player) && !player.hasPermission("residence.admin.move")) {
+        if (!res.getPermissions().playerHas(player.toString(), "move", true) && !Residence.isResAdminOn(player) && !player.hasPermission("residence.admin.move")) {
             ResidenceCounter counter = ResidenceCounter.get(player, res, true);
 
             counter.increment();
-
 
             if (counter.hasOverflown()) {
                 if (player.isInsideVehicle()) {
                     Entity vehicle = player.getVehicle();
                     vehicle.eject();
-                    vehicle.teleport(entryLocation.get(playerName));
+                    vehicle.teleport(res.getOutsideFreeLoc(entryLocation.get(player.toString())));
                 }
-                player.teleport(res.getOutsideFreeLoc(entryLocation.get(playerName)));
-                System.out.println("Hrác " + playerName + " byl teleportován na spawn z důvodu opakovaného vstupování do residence bez práv.");
-            }
 
-            player.sendMessage(ChatColor.RED + "Tady nemás, co delat.");
+                player.teleport(entryLocation.get(player.toString()));
+                System.out.println("Hrac " + player.toString() + " byl teleportovan mimo residenci z duvodu opakovaneho vstupovani do residence bez prav.");
+            }
+            player.sendMessage(ChatColor.RED + "Tady nem�s, co delat.");
         }
     }
-
-    @EventHandler
-    public void onResidenceEnterEvent(ResidenceEnterEvent e) {
-        entryLocation.put(e.getPlayer().getDisplayName(), e.getPlayer().getLocation());
-    }
 }
+
