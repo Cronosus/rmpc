@@ -51,7 +51,7 @@ public class PlayerInteractListener implements Listener {
 
         if (!hasEntityPerms) {
             e.setCancelled(true);
-            String message = ("Player: " + p.getName() + " tried to right click entity " + e.getRightClicked().getType() + " in Residence: " + res.getName() + ".");
+            String message = ("Player: " + p.getName() + " tried to right click entity " + e.getRightClicked().getType() + " in Residence: " + res.getName() + ". Coordinates X: " + e.getRightClicked().getLocation().getX() + " Y: " + e.getRightClicked().getLocation().getY() + " Z: " + e.getRightClicked().getLocation().getZ() + ". World: " + e.getRightClicked().getLocation().getWorld().getName());
             plugin.logToFile(message);
 
             ResModProtect.logger.log(Level.WARNING, "Player: {0} tried to right click entity {1} in Residence: {2}.", new Object[]{p.getName(), e.getRightClicked().getType(), res.getName()});
@@ -61,7 +61,7 @@ public class PlayerInteractListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlyerInteract(PlayerInteractEvent e) {
+    public void onPlayerInteract(PlayerInteractEvent e) {
 
         if (e.getPlayer().isOp() || e.getPlayer().hasPermission("residence.admin")) {
             return;
@@ -86,10 +86,10 @@ public class PlayerInteractListener implements Listener {
                 if (!hasWrenchPerms && e.getItem() != null && cfg.getWrenchIds().contains(e.getItem().getTypeId())) {
                     e.setCancelled(true);
 
-                    String message = ("Player: " + p.getName() + " tried to use wrench on item ID " + clickedBlock.getTypeId() + " in Residence: " + res.getName() + ".");
+                    String message = ("Player: " + p.getName() + " tried to use wrench " + e.getItem().getTypeId() + " onn item ID " + clickedBlock.getTypeId() + " in Residence: " + res.getName() + ". Coordinates X: " + clickedBlock.getX() + " Y: " + clickedBlock.getY() + " Z: " + clickedBlock.getZ()) + ". World: " + clickedBlock.getWorld().getName();
                     plugin.logToFile(message);
 
-                    ResModProtect.logger.log(Level.WARNING, "Player: {0} tried to use wrench on item ID: {1} in Residence: {2}.", new Object[]{p.getName(), clickedBlock.getTypeId(), res.getName()});
+                    ResModProtect.logger.log(Level.WARNING, "Player: {0} tried to use wrench {1} on item ID: {2} in Residence: {3}.", new Object[]{p.getName(), e.getItem().getTypeId(), clickedBlock.getTypeId(), res.getName()});
 
                     p.sendMessage(ChatColor.RED + "You cannot use this Item.");
                     return;
@@ -105,7 +105,7 @@ public class PlayerInteractListener implements Listener {
         Location l = clickedBlock.getLocation();
         ClaimedResidence res = resManager.getByLoc(l);
 
-        if (res == null || p.isOp()) {
+        if (res == null || p.isOp() || p.hasPermission("residence.admin")) {
             return;
         }
 
@@ -116,6 +116,8 @@ public class PlayerInteractListener implements Listener {
         if (!hasMEPerms && cfg.getAEProtectedIds().contains(clickedBlock.getTypeId())) {
             p.closeInventory();
             e.setCancelled(true);
+            String message = ("Player: " + p.getName() + " tried to open ME - ID " + clickedBlock.getTypeId() + " in Residence: " + res.getName() + ". Coordinates X: " + clickedBlock.getX() + " Y: " + clickedBlock.getY() + "Z: " + clickedBlock.getZ()) + ". World: " + clickedBlock.getWorld().getName();
+            plugin.logToFile(message);
             p.sendMessage(ChatColor.RED + "You cannot open this block!");
             return;
         }
@@ -125,6 +127,8 @@ public class PlayerInteractListener implements Listener {
         if (!hasChestPerms && cfg.getProtectedChestIds().contains(clickedBlock.getTypeId())) {
             p.closeInventory();
             e.setCancelled(true);
+            String message = ("Player: " + p.getName() + " tried open chest - ID " + clickedBlock.getTypeId() + " in Residence: " + res.getName() + ". Coordinates X: " + clickedBlock.getX() + " Y: " + clickedBlock.getY() + "Z: " + clickedBlock.getZ()) + ". World: " + clickedBlock.getWorld().getName();
+            plugin.logToFile(message);
             p.sendMessage(ChatColor.RED + "You cannot open this chest!");
             return;
         }
@@ -134,10 +138,10 @@ public class PlayerInteractListener implements Listener {
         if (!hasWrenchPerms && e.getItem() != null && cfg.getWrenchIds().contains(e.getItem().getTypeId())) {
             e.setCancelled(true);
 
-            String message = ("Player: " + p.getName() + " tried to use wrench on item ID " + clickedBlock.getTypeId() + " in Residence: " + res.getName() + ".");
+            String message = ("Player: " + p.getName() + " tried to use wrench " + e.getItem().getTypeId() + " on item ID " + clickedBlock.getTypeId() + " in Residence: " + res.getName() + ". Coordinates X: " + clickedBlock.getX() + " Y: " + clickedBlock.getY() + "Z: " + clickedBlock.getZ()) + ". World: " + clickedBlock.getWorld().getName();
             plugin.logToFile(message);
 
-            ResModProtect.logger.log(Level.WARNING, "Player: {0} tried to use wrench on item ID: {1} in Residence: {2}.", new Object[]{p.getName(), clickedBlock.getTypeId(), res.getName()});
+            ResModProtect.logger.log(Level.WARNING, "Player: {0} tried to use wrench {1} on item ID: {2} in Residence: {3}.", new Object[]{p.getName(), e.getItem().getTypeId(), clickedBlock.getTypeId(), res.getName()});
 
             p.sendMessage(ChatColor.RED + "You cannot use this Item.");
             return;
@@ -148,6 +152,8 @@ public class PlayerInteractListener implements Listener {
         if (!hasMachinePerms && cfg.getMachineIds().contains(clickedBlock.getTypeId())) {
             e.setCancelled(true);
             p.closeInventory();
+            String message = ("Player: " + p.getName() + " tried to open machine - ID " + clickedBlock.getTypeId() + " in Residence: " + res.getName() + ". Coordinates X: " + clickedBlock.getX() + " Y: " + clickedBlock.getY() + "Z: " + clickedBlock.getZ()) + ". World: " + clickedBlock.getWorld().getName();
+            plugin.logToFile(message);
             p.sendMessage(ChatColor.RED + "You cannot open this machine!");
             return;
         }
@@ -157,6 +163,8 @@ public class PlayerInteractListener implements Listener {
         if (!hasDecorPerms && cfg.getDecorIds().contains(clickedBlock.getTypeId())) {
             e.setCancelled(true);
             p.closeInventory();
+            String message = ("Player: " + p.getName() + " tried to open decor - ID " + clickedBlock.getTypeId() + " in Residence: " + res.getName() + ". Coordinates X: " + clickedBlock.getX() + " Y: " + clickedBlock.getY() + "Z: " + clickedBlock.getZ()) + ". World: " + clickedBlock.getWorld().getName();
+            plugin.logToFile(message);
             p.sendMessage(ChatColor.RED + "You are not allowed to use this!");
         }
 

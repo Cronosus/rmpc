@@ -141,10 +141,10 @@ public class ResModProtect extends JavaPlugin {
                 sender.sendMessage(ChatColor.GREEN + "/rmp help flags");
                 return true;
             }
-            if (args[0].equalsIgnoreCase("d")) {
-                debugCommand((Player) sender, args[1]);
-                return true;
-            }
+//            if (args[0].equalsIgnoreCase("d")) {
+//                debugCommand((Player) sender, args[1]);
+//                return true;
+//            }
         }
         if (command.getName().equalsIgnoreCase("rmpreload")) {
             if (!(sender instanceof Player)) {
@@ -185,8 +185,6 @@ public class ResModProtect extends JavaPlugin {
     public void logToFile(String message) {
         try {
             File dataFolder = Bukkit.getServer().getPluginManager().getPlugin("ResModProtect").getDataFolder();
-            //File dataFolder = getDataFolder();
-            System.out.println(dataFolder);
             if (!dataFolder.exists()) {
                 dataFolder.mkdir();
             }
