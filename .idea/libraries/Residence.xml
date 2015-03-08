@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Residence">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/Residence.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/libs/Residence.jar!/" />
+    </SOURCES>
+  </library>
+</component>

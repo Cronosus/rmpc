@@ -1,21 +1,21 @@
 package sk.yweb.gnox.bukkit.resmodprotect;
 
+import net.t00thpick1.residence.api.areas.ResidenceArea;
+import org.bukkit.entity.Player;
+
 import java.util.HashSet;
 
 //import org.apache.commons.lang3.Validate;
-import org.bukkit.entity.Player;
-
-import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 
 public class ResidenceCounter
 {
 	public static final int COUNT_LIMIT = 10;
 	public static final HashSet<ResidenceCounter> VALUES = new HashSet<ResidenceCounter>();
 	private final Player player;
-	private final ClaimedResidence residence;
+	private final ResidenceArea residence;
 	private int count;
 	
-	public ResidenceCounter(Player player, ClaimedResidence residence)
+	public ResidenceCounter(Player player, ResidenceArea residence)
 	{
 		//Validate.notNull(player);
 		//Validate.notNull(residence);
@@ -24,7 +24,7 @@ public class ResidenceCounter
 		this.residence = residence;
 	}
 	
-	public static ResidenceCounter get(Player player, ClaimedResidence residence, boolean create)
+	public static ResidenceCounter get(Player player, ResidenceArea residence, boolean create)
 	{
 		for(ResidenceCounter counter : VALUES)
 			if(counter.matches(player, residence))
@@ -40,7 +40,7 @@ public class ResidenceCounter
 		return counter;
 	}
 	
-	public boolean matches(Player player, ClaimedResidence residence)
+	public boolean matches(Player player, ResidenceArea residence)
 	{
 		return this.player.equals(player) && this.residence.equals(residence);
 	}
@@ -55,7 +55,7 @@ public class ResidenceCounter
 		return count >= COUNT_LIMIT;
 	}
 
-	public ClaimedResidence getResidence()
+	public ResidenceArea getResidence()
 	{
 		return residence;
 	}

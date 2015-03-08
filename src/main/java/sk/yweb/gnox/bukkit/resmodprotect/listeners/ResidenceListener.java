@@ -1,7 +1,8 @@
 package sk.yweb.gnox.bukkit.resmodprotect.listeners;
 
-import com.bekvon.bukkit.residence.Residence;
-import com.bekvon.bukkit.residence.protection.ClaimedResidence;
+import net.t00thpick1.residence.api.ResidenceAPI;
+import net.t00thpick1.residence.api.areas.ResidenceArea;
+import net.t00thpick1.residence.api.flags.Flag;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -30,7 +31,7 @@ public class ResidenceListener implements Listener {
         Long last = lastUpdate.get(player.toString());
         long now = System.currentTimeMillis();
 
-        if (last != null && now - last < Residence.getConfigManager().getMinMoveUpdateInterval())
+        if (last != null && now - last < 50)
             return;
 
         Location from = event.getFrom();
@@ -39,7 +40,7 @@ public class ResidenceListener implements Listener {
         if (from.distance(to) <= 0)
             return;
 
-        ClaimedResidence res = Residence.getResidenceManager().getByLoc(to);
+        ResidenceArea res = ResidenceAPI.getResidenceManager().getByLocation(to);
         if (res == null) {
             entryLocation.put(player.toString(), player.getLocation());
             return;
@@ -47,7 +48,10 @@ public class ResidenceListener implements Listener {
 
         lastUpdate.put(player.toString(), now);
 
-        if (!res.getPermissions().playerHas(player.getName(), "move", true) && !Residence.isResAdminOn(player) && !player.hasPermission("residence.admin.move")) {
+        if (!ResidenceAPI.getPermissionsAreaByLocation(event.getTo()).allowAction(player.getName(),
+                new Flag("move", Flag.FlagType.ANY, null, ""))
+                && !ResidenceAPI.getResidenceManager().getByLocation(event.getTo()).getOwner().equals(player.getName())
+                && !player.hasPermission("residence.admin.move")) {
             ResidenceCounter counter = ResidenceCounter.get(player, res, true);
 
             counter.increment();

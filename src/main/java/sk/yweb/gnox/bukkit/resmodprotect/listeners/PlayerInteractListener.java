@@ -1,9 +1,9 @@
 package sk.yweb.gnox.bukkit.resmodprotect.listeners;
 
-import com.bekvon.bukkit.residence.Residence;
-import com.bekvon.bukkit.residence.protection.ClaimedResidence;
-import com.bekvon.bukkit.residence.protection.ResidenceManager;
-import com.bekvon.bukkit.residence.protection.ResidencePermissions;
+import net.t00thpick1.residence.api.ResidenceAPI;
+import net.t00thpick1.residence.api.ResidenceManager;
+import net.t00thpick1.residence.api.areas.PermissionsArea;
+import net.t00thpick1.residence.api.areas.ResidenceArea;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 public class PlayerInteractListener implements Listener {
 
     public static final Logger logger = ResModProtect.logger;
-    public ResidenceManager resManager = Residence.getResidenceManager();
+    public ResidenceManager resManager = ResidenceAPI.getResidenceManager();
     public Config cfg = ResModProtect.getConfigManager();
     private ResModProtect plugin = new ResModProtect();
 
@@ -40,17 +40,17 @@ public class PlayerInteractListener implements Listener {
 
         Player p = e.getPlayer();
         Location l = e.getRightClicked().getLocation();
-        ClaimedResidence res = resManager.getByLoc(l);
+        PermissionsArea perms = ResidenceAPI.getPermissionsAreaByLocation(l);
 
-        if (res == null) {
+        if (perms == null) {
             return;
         }
 
-        ResidencePermissions resPerms = res.getPermissions();
-        boolean hasEntityPerms = resPerms.playerHas(p.getName(), "entity", true);
+        boolean hasEntityPerms = perms.allowAction(p.getName(), Config.getFlag(Config.FLAG_ENTITY));
 
         if (!hasEntityPerms) {
             e.setCancelled(true);
+            ResidenceArea res = resManager.getByLocation(l);
             String message = ("Player: " + p.getName() + " tried to right click entity " + e.getRightClicked().getType() + " in Residence: " + res.getName() + ". Coordinates X: " + e.getRightClicked().getLocation().getX() + " Y: " + e.getRightClicked().getLocation().getY() + " Z: " + e.getRightClicked().getLocation().getZ() + ". World: " + e.getRightClicked().getLocation().getWorld().getName());
             plugin.logToFile(message);
 
@@ -73,15 +73,16 @@ public class PlayerInteractListener implements Listener {
                 Player p = e.getPlayer();
                 Block clickedBlock = p.getTargetBlock(null, 15);
                 Location l = clickedBlock.getLocation();
+                PermissionsArea perms = ResidenceAPI.getPermissionsAreaByLocation(l);
 
-                ClaimedResidence res = resManager.getByLoc(l);
+                ResidenceArea res = resManager.getByLocation(l);
+
 
                 if (res == null) {
                     return;
                 }
 
-                ResidencePermissions resPerms = res.getPermissions();
-                boolean hasWrenchPerms = resPerms.playerHas(p.getName(), "wrench", true);
+                boolean hasWrenchPerms = perms.allowAction(p.getName(), Config.getFlag(Config.FLAG_WRENCH));
 
                 if (!hasWrenchPerms && e.getItem() != null && cfg.getWrenchIds().contains(e.getItem().getTypeId())) {
                     e.setCancelled(true);
@@ -103,15 +104,15 @@ public class PlayerInteractListener implements Listener {
         Player p = e.getPlayer();
         Block clickedBlock = e.getClickedBlock();
         Location l = clickedBlock.getLocation();
-        ClaimedResidence res = resManager.getByLoc(l);
+        ResidenceArea res = resManager.getByLocation(l);
 
         if (res == null || p.isOp() || p.hasPermission("residence.admin")) {
             return;
         }
 
-        ResidencePermissions resPerms = res.getPermissions();
+        PermissionsArea perms = ResidenceAPI.getPermissionsAreaByLocation(l);
 
-        boolean hasMEPerms = resPerms.playerHas(p.getName(), "me", true);
+        boolean hasMEPerms = perms.allowAction(p.getName(), Config.getFlag(Config.FLAG_ME));
 
         if (!hasMEPerms && cfg.getAEProtectedIds().contains(clickedBlock.getTypeId())) {
             p.closeInventory();
@@ -122,7 +123,7 @@ public class PlayerInteractListener implements Listener {
             return;
         }
 
-        boolean hasChestPerms = resPerms.playerHas(p.getName(), "modchests", true);
+        boolean hasChestPerms = perms.allowAction(p.getName(), Config.getFlag(Config.FLAG_MODCHESTS));
 
         if (!hasChestPerms && cfg.getProtectedChestIds().contains(clickedBlock.getTypeId())) {
             p.closeInventory();
@@ -133,7 +134,7 @@ public class PlayerInteractListener implements Listener {
             return;
         }
 
-        boolean hasWrenchPerms = resPerms.playerHas(p.getName(), "wrench", true);
+        boolean hasWrenchPerms = perms.allowAction(p.getName(), Config.getFlag(Config.FLAG_WRENCH));
 
         if (!hasWrenchPerms && e.getItem() != null && cfg.getWrenchIds().contains(e.getItem().getTypeId())) {
             e.setCancelled(true);
@@ -147,7 +148,7 @@ public class PlayerInteractListener implements Listener {
             return;
         }
 
-        boolean hasMachinePerms = resPerms.playerHas(p.getName(), "machine", true);
+        boolean hasMachinePerms = perms.allowAction(p.getName(), Config.getFlag(Config.FLAG_MACHINE));
 
         if (!hasMachinePerms && cfg.getMachineIds().contains(clickedBlock.getTypeId())) {
             e.setCancelled(true);
@@ -158,7 +159,7 @@ public class PlayerInteractListener implements Listener {
             return;
         }
 
-        boolean hasDecorPerms = resPerms.playerHas(p.getName(), "decor", true);
+        boolean hasDecorPerms = perms.allowAction(p.getName(), Config.getFlag(Config.FLAG_DECOR));
 
         if (!hasDecorPerms && cfg.getDecorIds().contains(clickedBlock.getTypeId())) {
             e.setCancelled(true);

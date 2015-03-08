@@ -1,19 +1,43 @@
 package sk.yweb.gnox.bukkit.resmodprotect;
 
-import java.io.File;
-import java.util.List;
-
+import net.t00thpick1.residence.api.flags.Flag;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-public class Config
-{
+import java.io.File;
+import java.util.List;
+
+public class Config {
+
+    public static List<Flag> flags;
+
+    public static final int FLAG_WRENCH = 1;
+    public static final int FLAG_MACHINE = 2;
+    public static final int FLAG_DECOR = 3;
+    public static final int FLAG_ENTITY = 4;
+    public static final int FLAG_ME = 5;
+    public static final int FLAG_MODCHESTS = 6;
+
+    static {
+        Flag parent = new Flag("mods", Flag.FlagType.AREA_ONLY, null, "Activates every mod flag");
+        flags.add(parent);
+        flags.add(new Flag("wrench", Flag.FlagType.AREA_ONLY, parent, "Wrench flag", true));
+        flags.add(new Flag("machine", Flag.FlagType.AREA_ONLY, parent, "machine flag", true));
+        flags.add(new Flag("decor", Flag.FlagType.AREA_ONLY, parent, "decoration blocks flag", true));
+        flags.add(new Flag("entity", Flag.FlagType.AREA_ONLY, parent, "Entity flag", true));
+        flags.add(new Flag("me", Flag.FlagType.AREA_ONLY, parent, "ME flag", true));
+        flags.add(new Flag("modchests", Flag.FlagType.AREA_ONLY, parent, "Mod chests flag", true));
+    }
 
 	protected List<Integer> MEProtectedIds;
 	protected List<Integer> protectedChestIds;
 	protected List<Integer> wrenchIds;
 	protected List<Integer> machineIds;
 	protected List<Integer> decorIds;
+
+    public static Flag getFlag(int flag) {
+        return flags.get(flag);
+    }
 
 	protected FileConfiguration config;
 	private File cfgFile;

@@ -1,6 +1,6 @@
 package sk.yweb.gnox.bukkit.resmodprotect;
 
-import com.bekvon.bukkit.residence.protection.FlagPermissions;
+import net.t00thpick1.residence.api.flags.FlagManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -54,19 +54,7 @@ public class ResModProtect extends JavaPlugin {
 
         logger.info("[ResModProtect] Added 6 flags and 1 group to Residence!");
 
-        FlagPermissions.addFlag("me");
-        FlagPermissions.addFlag("modchests");
-        FlagPermissions.addFlag("wrench");
-        FlagPermissions.addFlag("machine");
-        FlagPermissions.addFlag("decor");
-        FlagPermissions.addFlag("entity");
-
-        FlagPermissions.addFlagToFlagGroup("mods", "me");
-        FlagPermissions.addFlagToFlagGroup("mods", "modchests");
-        FlagPermissions.addFlagToFlagGroup("mods", "wrench");
-        FlagPermissions.addFlagToFlagGroup("mods", "machine");
-        FlagPermissions.addFlagToFlagGroup("mods", "decor");
-        FlagPermissions.addFlagToFlagGroup("mods", "entity");
+        Config.flags.forEach(FlagManager::addFlag);
 
         getServer().getPluginManager().registerEvents(new PlayerInteractListener(), this);
         getServer().getPluginManager().registerEvents(new ResidenceListener(), this);
