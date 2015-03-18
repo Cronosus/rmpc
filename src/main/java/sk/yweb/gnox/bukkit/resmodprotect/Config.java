@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Config {
@@ -19,6 +20,9 @@ public class Config {
     public static final int FLAG_MODCHESTS = 6;
 
     static {
+
+
+        flags = new ArrayList<>();
         Flag parent = new Flag("mods", Flag.FlagType.AREA_ONLY, null, "Activates every mod flag");
         flags.add(parent);
         flags.add(new Flag("wrench", Flag.FlagType.AREA_ONLY, parent, "Wrench flag", true));
@@ -29,84 +33,75 @@ public class Config {
         flags.add(new Flag("modchests", Flag.FlagType.AREA_ONLY, parent, "Mod chests flag", true));
     }
 
-	protected List<Integer> MEProtectedIds;
-	protected List<Integer> protectedChestIds;
-	protected List<Integer> wrenchIds;
-	protected List<Integer> machineIds;
-	protected List<Integer> decorIds;
+    protected List<Integer> MEProtectedIds;
+    protected List<Integer> protectedChestIds;
+    protected List<Integer> wrenchIds;
+    protected List<Integer> machineIds;
+    protected List<Integer> decorIds;
 
     public static Flag getFlag(int flag) {
         return flags.get(flag);
     }
 
-	protected FileConfiguration config;
-	private File cfgFile;
-	private final File datafolder;
+    protected FileConfiguration config;
+    private File cfgFile;
+    private final File datafolder;
 
-	public Config(File datafolder)
-	{
+    public Config(File datafolder) {
 
-		this.datafolder = datafolder;
-		this.cfgFile = new File(datafolder, "config.yml");
-		config = YamlConfiguration.loadConfiguration(cfgFile);
-		this.load();
-	}
+        this.datafolder = datafolder;
+        this.cfgFile = new File(datafolder, "config.yml");
+        config = YamlConfiguration.loadConfiguration(cfgFile);
+        this.load();
+    }
 
-	private void load()
-	{
-		MEProtectedIds = config.getIntegerList("Flags.me");
-		protectedChestIds = config.getIntegerList("Flags.modchests");
-		wrenchIds = config.getIntegerList("Flags.wrench");
-		machineIds = config.getIntegerList("Flags.machine");
-		decorIds = config.getIntegerList("Flags.decor");
-	}
+    private void load() {
+        MEProtectedIds = config.getIntegerList("Flags.me");
+        protectedChestIds = config.getIntegerList("Flags.modchests");
+        wrenchIds = config.getIntegerList("Flags.wrench");
+        machineIds = config.getIntegerList("Flags.machine");
+        decorIds = config.getIntegerList("Flags.decor");
+    }
 
-	// <editor-fold defaultstate="collapsed" desc="not used save function">
-	// private void save() {
-	// try {
-	// config.save(cfgFile);
-	// Logger.getLogger("Minecraft").log(Level.CONFIG,
-	// "[ResModProtect] File successfuly saved!");
-	// } catch (IOException ex) {
-	// Logger.getLogger(Config.class.getName()).log(Level.WARNING,
-	// "[ResModProtect] This file could not be saved.", ex);
-	// }
-	// }
-	// </editor-fold>
+    // <editor-fold defaultstate="collapsed" desc="not used save function">
+    // private void save() {
+    // try {
+    // config.save(cfgFile);
+    // Logger.getLogger("Minecraft").log(Level.CONFIG,
+    // "[ResModProtect] File successfuly saved!");
+    // } catch (IOException ex) {
+    // Logger.getLogger(Config.class.getName()).log(Level.WARNING,
+    // "[ResModProtect] This file could not be saved.", ex);
+    // }
+    // }
+    // </editor-fold>
 
-	public void reload()
-	{
-		if(cfgFile == null)
-		{
-			cfgFile = new File(datafolder, "config.yml");
-		}
-		config = YamlConfiguration.loadConfiguration(cfgFile);
-		load();
-	}
+    public void reload() {
+        if (cfgFile == null) {
+            cfgFile = new File(datafolder, "config.yml");
+        }
+        config = YamlConfiguration.loadConfiguration(cfgFile);
+        load();
+    }
 
-	public List<Integer> getAEProtectedIds()
-	{
-		return MEProtectedIds;
-	}
+    public List<Integer> getAEProtectedIds() {
+        return MEProtectedIds;
+    }
 
-	public List<Integer> getProtectedChestIds()
-	{
-		return protectedChestIds;
-	}
+    public List<Integer> getProtectedChestIds() {
+        return protectedChestIds;
+    }
 
-	public List<Integer> getWrenchIds()
-	{
-		return wrenchIds;
-	}
+    public List<Integer> getWrenchIds() {
+        return wrenchIds;
+    }
 
-	public List<Integer> getMachineIds()
-	{
-		return machineIds;
-	}
+    public List<Integer> getMachineIds() {
+        return machineIds;
+    }
 
-	public List<Integer> getDecorIds()
-	{
-		return decorIds;
-	}
+    public List<Integer> getDecorIds() {
+        return decorIds;
+    }
 
 }

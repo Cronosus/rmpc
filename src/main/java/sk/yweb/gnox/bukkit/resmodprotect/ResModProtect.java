@@ -1,5 +1,6 @@
 package sk.yweb.gnox.bukkit.resmodprotect;
 
+import net.t00thpick1.residence.api.flags.Flag;
 import net.t00thpick1.residence.api.flags.FlagManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,12 +25,14 @@ import java.util.logging.Logger;
 
 public class ResModProtect extends JavaPlugin {
 
+    public static ResModProtect plugin;
     public static final Logger logger = Logger.getLogger("Minecraft");
     private static Config cfgManager;
 
     @Override
     public void onEnable() {
 
+        plugin = this;
         ResidenceCounter.VALUES.clear();
 
         saveDefaultConfig();
@@ -54,7 +57,9 @@ public class ResModProtect extends JavaPlugin {
 
         logger.info("[ResModProtect] Added 6 flags and 1 group to Residence!");
 
-        Config.flags.forEach(FlagManager::addFlag);
+        for (Flag f : Config.flags)
+            FlagManager.addFlag(f);
+
 
         getServer().getPluginManager().registerEvents(new PlayerInteractListener(), this);
         getServer().getPluginManager().registerEvents(new ResidenceListener(), this);
@@ -63,7 +68,8 @@ public class ResModProtect extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        cfgManager = null;
+        if (cfgManager != null)
+            cfgManager = null;
     }
 
     @Override

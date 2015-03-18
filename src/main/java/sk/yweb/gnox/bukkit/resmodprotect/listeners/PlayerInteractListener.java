@@ -1,9 +1,11 @@
 package sk.yweb.gnox.bukkit.resmodprotect.listeners;
 
+import com.sk89q.worldguard.bukkit.event.block.PlaceBlockEvent;
 import net.t00thpick1.residence.api.ResidenceAPI;
 import net.t00thpick1.residence.api.ResidenceManager;
 import net.t00thpick1.residence.api.areas.PermissionsArea;
 import net.t00thpick1.residence.api.areas.ResidenceArea;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -12,6 +14,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import sk.yweb.gnox.bukkit.resmodprotect.Config;
@@ -25,15 +29,16 @@ public class PlayerInteractListener implements Listener {
     public static final Logger logger = ResModProtect.logger;
     public ResidenceManager resManager = ResidenceAPI.getResidenceManager();
     public Config cfg = ResModProtect.getConfigManager();
-    private ResModProtect plugin = new ResModProtect();
+    private ResModProtect plugin = ResModProtect.plugin;
 
 
     public PlayerInteractListener() {
     }
 
+
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent e) {
-
         if (e.getPlayer().isOp() || e.getPlayer().hasPermission("residence.admin")) {
             return;
         }
@@ -62,7 +67,6 @@ public class PlayerInteractListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent e) {
-
         if (e.getPlayer().isOp() || e.getPlayer().hasPermission("residence.admin")) {
             return;
         }
