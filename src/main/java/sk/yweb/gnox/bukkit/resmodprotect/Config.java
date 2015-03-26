@@ -18,10 +18,9 @@ public class Config {
     public static final int FLAG_ENTITY = 4;
     public static final int FLAG_ME = 5;
     public static final int FLAG_MODCHESTS = 6;
+    public static final int FLAG_FAKEPLAYER = 7;
 
     static {
-
-
         flags = new ArrayList<>();
         Flag parent = new Flag("mods", Flag.FlagType.AREA_ONLY, null, "Activates every mod flag");
         flags.add(parent);
@@ -31,6 +30,7 @@ public class Config {
         flags.add(new Flag("entity", Flag.FlagType.AREA_ONLY, parent, "Entity flag", true));
         flags.add(new Flag("me", Flag.FlagType.AREA_ONLY, parent, "ME flag", true));
         flags.add(new Flag("modchests", Flag.FlagType.AREA_ONLY, parent, "Mod chests flag", true));
+        flags.add(new Flag("fakeplayer", Flag.FlagType.AREA_ONLY, parent, "Fake player flag", true));
     }
 
     protected List<Integer> MEProtectedIds;

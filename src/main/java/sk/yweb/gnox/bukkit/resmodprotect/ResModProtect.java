@@ -43,19 +43,17 @@ public class ResModProtect extends JavaPlugin {
 
         if (p != null) {
             if (!p.isEnabled()) {
-                System.out
-                        .println("ResModProtect - Manually Enabling Residence!");
+                System.out.println("ResModProtect - Manually Enabling Residence!");
                 pm.enablePlugin(p);
             }
 
         } else {
-            System.out
-                    .println("ResModProtect - Residence NOT Installed, DISABLED!");
+            System.out.println("ResModProtect - Residence NOT Installed, DISABLED!");
             this.setEnabled(false);
         }
 
 
-        logger.info("[ResModProtect] Added 6 flags and 1 group to Residence!");
+        logger.info("[ResModProtect] Added few things to Residence");
 
         for (Flag f : Config.flags)
             FlagManager.addFlag(f);
@@ -91,8 +89,7 @@ public class ResModProtect extends JavaPlugin {
                             logger.info("[ResModProtect] Config has been reloaded!");
                             return true;
                         } else {
-                            p.sendMessage(ChatColor.RED
-                                    + "You are not allowed to use this command!");
+                            p.sendMessage(ChatColor.RED + "You are not allowed to use this command!");
                             return true;
                         }
                     }
@@ -123,6 +120,10 @@ public class ResModProtect extends JavaPlugin {
                                 + "- mods : "
                                 + ChatColor.WHITE
                                 + "this flag gives every flag from this list to a player");
+                        sender.sendMessage(ChatColor.GOLD
+                                + " - fakeplayer :"
+                                + ChatColor.WHITE
+                                + "denies some of fakeplayer grief techniques (not all of them though)");
                         return true;
                     } else {
                         sender.sendMessage(ChatColor.DARK_AQUA + "Content:");
@@ -149,7 +150,7 @@ public class ResModProtect extends JavaPlugin {
             } else {
                 Player p = (Player) sender;
                 if (p.isOp()) {
-                    p.sendMessage("Plugin reload commiting!");
+                    p.sendMessage("Plugin reloaded!");
                     logger.log(Level.INFO, "Plugin reloaded by {0}!",
                             sender.getName());
                     reloadConfig();

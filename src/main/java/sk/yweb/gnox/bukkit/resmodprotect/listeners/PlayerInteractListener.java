@@ -1,21 +1,18 @@
 package sk.yweb.gnox.bukkit.resmodprotect.listeners;
 
-import com.sk89q.worldguard.bukkit.event.block.PlaceBlockEvent;
 import net.t00thpick1.residence.api.ResidenceAPI;
 import net.t00thpick1.residence.api.ResidenceManager;
 import net.t00thpick1.residence.api.areas.PermissionsArea;
 import net.t00thpick1.residence.api.areas.ResidenceArea;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import sk.yweb.gnox.bukkit.resmodprotect.Config;
@@ -36,7 +33,6 @@ public class PlayerInteractListener implements Listener {
     }
 
 
-
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent e) {
         if (e.getPlayer().isOp() || e.getPlayer().hasPermission("residence.admin")) {
@@ -55,6 +51,7 @@ public class PlayerInteractListener implements Listener {
 
         if (!hasEntityPerms) {
             e.setCancelled(true);
+
             ResidenceArea res = resManager.getByLocation(l);
             String message = ("Player: " + p.getName() + " tried to right click entity " + e.getRightClicked().getType() + " in Residence: " + res.getName() + ". Coordinates X: " + e.getRightClicked().getLocation().getX() + " Y: " + e.getRightClicked().getLocation().getY() + " Z: " + e.getRightClicked().getLocation().getZ() + ". World: " + e.getRightClicked().getLocation().getWorld().getName());
             plugin.logToFile(message);
@@ -90,6 +87,8 @@ public class PlayerInteractListener implements Listener {
 
                 if (!hasWrenchPerms && e.getItem() != null && cfg.getWrenchIds().contains(e.getItem().getTypeId())) {
                     e.setCancelled(true);
+                    e.setUseInteractedBlock(Event.Result.DENY);
+                    e.setUseItemInHand(Event.Result.DENY);
 
                     String message = ("Player: " + p.getName() + " tried to use wrench " + e.getItem().getTypeId() + " onn item ID " + clickedBlock.getTypeId() + " in Residence: " + res.getName() + ". Coordinates X: " + clickedBlock.getX() + " Y: " + clickedBlock.getY() + " Z: " + clickedBlock.getZ()) + ". World: " + clickedBlock.getWorld().getName();
                     plugin.logToFile(message);
@@ -116,12 +115,22 @@ public class PlayerInteractListener implements Listener {
 
         PermissionsArea perms = ResidenceAPI.getPermissionsAreaByLocation(l);
 
-        boolean hasMEPerms = perms.allowAction(p.getName(), Config.getFlag(Config.FLAG_ME));
+        if (p.getDisplayName().startsWith("[") && p.getDisplayName().endsWith("]") &&
+                !perms.allowAction(Config.getFlag(Config.FLAG_FAKEPLAYER))) {
+            e.setCancelled(true);
+            e.setUseInteractedBlock(Event.Result.DENY);
+            e.setUseItemInHand(Event.Result.DENY);
+            return;
+        }
 
-        if (!hasMEPerms && cfg.getAEProtectedIds().contains(clickedBlock.getTypeId())) {
+        boolean hasMEPerms = perms.allowAction(p.getDisplayName(), Config.getFlag(Config.FLAG_ME));
+
+        if (!hasMEPerms && cfg.getAEProtectedIds().contains(clickedBlock.getType().getId())) {
             p.closeInventory();
             e.setCancelled(true);
-            String message = ("Player: " + p.getName() + " tried to open ME - ID " + clickedBlock.getTypeId() + " in Residence: " + res.getName() + ". Coordinates X: " + clickedBlock.getX() + " Y: " + clickedBlock.getY() + "Z: " + clickedBlock.getZ()) + ". World: " + clickedBlock.getWorld().getName();
+            e.setUseInteractedBlock(Event.Result.DENY);
+            e.setUseItemInHand(Event.Result.DENY);
+            String message = ("Player: " + p.getDisplayName() + " tried to open ME - ID " + clickedBlock.getTypeId() + " in Residence: " + res.getName() + ". Coordinates X: " + clickedBlock.getX() + " Y: " + clickedBlock.getY() + "Z: " + clickedBlock.getZ()) + ". World: " + clickedBlock.getWorld().getName();
             plugin.logToFile(message);
             p.sendMessage(ChatColor.RED + "You cannot open this block!");
             return;
@@ -132,6 +141,8 @@ public class PlayerInteractListener implements Listener {
         if (!hasChestPerms && cfg.getProtectedChestIds().contains(clickedBlock.getTypeId())) {
             p.closeInventory();
             e.setCancelled(true);
+            e.setUseInteractedBlock(Event.Result.DENY);
+            e.setUseItemInHand(Event.Result.DENY);
             String message = ("Player: " + p.getName() + " tried open chest - ID " + clickedBlock.getTypeId() + " in Residence: " + res.getName() + ". Coordinates X: " + clickedBlock.getX() + " Y: " + clickedBlock.getY() + "Z: " + clickedBlock.getZ()) + ". World: " + clickedBlock.getWorld().getName();
             plugin.logToFile(message);
             p.sendMessage(ChatColor.RED + "You cannot open this chest!");
@@ -142,6 +153,8 @@ public class PlayerInteractListener implements Listener {
 
         if (!hasWrenchPerms && e.getItem() != null && cfg.getWrenchIds().contains(e.getItem().getTypeId())) {
             e.setCancelled(true);
+            e.setUseInteractedBlock(Event.Result.DENY);
+            e.setUseItemInHand(Event.Result.DENY);
 
             String message = ("Player: " + p.getName() + " tried to use wrench " + e.getItem().getTypeId() + " on item ID " + clickedBlock.getTypeId() + " in Residence: " + res.getName() + ". Coordinates X: " + clickedBlock.getX() + " Y: " + clickedBlock.getY() + "Z: " + clickedBlock.getZ()) + ". World: " + clickedBlock.getWorld().getName();
             plugin.logToFile(message);
@@ -156,6 +169,9 @@ public class PlayerInteractListener implements Listener {
 
         if (!hasMachinePerms && cfg.getMachineIds().contains(clickedBlock.getTypeId())) {
             e.setCancelled(true);
+            e.setUseInteractedBlock(Event.Result.DENY);
+            e.setUseItemInHand(Event.Result.DENY);
+
             p.closeInventory();
             String message = ("Player: " + p.getName() + " tried to open machine - ID " + clickedBlock.getTypeId() + " in Residence: " + res.getName() + ". Coordinates X: " + clickedBlock.getX() + " Y: " + clickedBlock.getY() + "Z: " + clickedBlock.getZ()) + ". World: " + clickedBlock.getWorld().getName();
             plugin.logToFile(message);
@@ -167,7 +183,10 @@ public class PlayerInteractListener implements Listener {
 
         if (!hasDecorPerms && cfg.getDecorIds().contains(clickedBlock.getTypeId())) {
             e.setCancelled(true);
+            e.setUseInteractedBlock(Event.Result.DENY);
+            e.setUseItemInHand(Event.Result.DENY);
             p.closeInventory();
+
             String message = ("Player: " + p.getName() + " tried to open decor - ID " + clickedBlock.getTypeId() + " in Residence: " + res.getName() + ". Coordinates X: " + clickedBlock.getX() + " Y: " + clickedBlock.getY() + "Z: " + clickedBlock.getZ()) + ". World: " + clickedBlock.getWorld().getName();
             plugin.logToFile(message);
             p.sendMessage(ChatColor.RED + "You are not allowed to use this!");
